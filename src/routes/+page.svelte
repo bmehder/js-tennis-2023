@@ -15,7 +15,7 @@
         set3: number[]
       }
       setWinners: string[]
-      game: number[]
+      game: Array<string | number>
       isTiebreak: boolean
     }
     currentSet: string
@@ -46,7 +46,7 @@
   }
 
   const updateSet = (ptWinner: number) => {
-    const [player1Score, player2Score] = match.score.sets[match.currentSet]
+    const [player1Score, player2Score]: number[] = match.score.sets[match.currentSet]
     const isTiebreak = () => player1Score === 6 && player2Score === 6
 
     const startNextSet = () => {
@@ -75,8 +75,8 @@
 
     if (
       (player1TiebreakScore >= 7 &&
-        player2TiebreakScore < player1TiebreakScore - 1) ||
-      (player2TiebreakScore >= 7 && player1TiebreakScore < player2TiebreakScore - 1)
+        player2TiebreakScore < +player1TiebreakScore - 1) ||
+      (player2TiebreakScore >= 7 && player1TiebreakScore < +player2TiebreakScore - 1)
     ) {
       match.score.tiebreaks[match.currentSet][ptWinner] = match.score.game[ptWinner]
       match.score.sets[match.currentSet][ptWinner] += 1
@@ -203,11 +203,15 @@
 <style>
   h1 {
     text-align: center;
+    margin-bottom: 0;
   }
   .score {
+    max-width: 600px;
     display: grid;
     grid-auto-flow: column;
-    margin: 1.5rem;
+    margin-block: 1.5rem;
+    margin-inline: auto;
+    background-color: white;
     border: 1px solid #323232;
   }
   .score > div > div {
@@ -232,5 +236,8 @@
   }
   button {
     padding: 1rem 2rem;
+    background-color: white;
+    font-weight: bold;
+    border: 1px solid #323232;
   }
 </style>
