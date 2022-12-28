@@ -1,6 +1,7 @@
 <script lang="ts">
   import { sum, isDuplicates } from '$lib/helpers'
   import Reload from '$lib/Reload.svelte'
+  import Set from './Set.svelte'
 
   type Match = {
     players: string[]
@@ -69,15 +70,27 @@
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
   }
 
+  const resetGameScore = () => {
+    match.score.game[0] = 0
+    match.score.game[1] = 0
+  }
+
+  const increaseWinnersSetScore = (ptWinner: number) => {
+    match.score.sets[match.currentSet as keyof typeof match.score.sets][
+      ptWinner
+    ] += 1
+    resetGameScore()
+  }
+
   const updateSet = (ptWinner: number) => {
     const [player1Score, player2Score]: number[] =
       match.score.sets[match.currentSet as keyof typeof match.score.sets]
 
-    const isTiebreak = () => player1Score === 6 && player2Score === 6
+    const isTiebreak = () => [player1Score, player2Score].every(score => score === 6)
 
     isTiebreak() && (match.score.isTiebreak = true)
 
-    const startNextSet = () => {
+    const increaseCurrentSet = () => {
       match.currentSet === 'set2' && (match.currentSet = 'set3')
       match.currentSet === 'set1' && (match.currentSet = 'set2')
     }
@@ -90,19 +103,18 @@
 
     if (isSetOver()) {
       match.score.setWinners = [...match.score.setWinners, match.players[ptWinner]]
-      startNextSet()
+      increaseCurrentSet()
     }
   }
 
   const updateTiebreak = (ptWinner: number) => {
     match.score.game[ptWinner] = +match.score.game[ptWinner] + 1
 
-    const [player1TiebreakScore, player2TiebreakScore] = match.score.game
+    const [player1Score, player2Score] = match.score.game
 
     const isTiebreakOver =
-      (player1TiebreakScore >= 7 &&
-        player2TiebreakScore < +player1TiebreakScore - 1) ||
-      (player2TiebreakScore >= 7 && player1TiebreakScore < +player2TiebreakScore - 1)
+      (player1Score >= 7 && player2Score < +player1Score - 1) ||
+      (player2Score >= 7 && player1Score < +player2Score - 1)
 
     if (isTiebreakOver) {
       const tiebreakScore =
@@ -110,13 +122,7 @@
 
       tiebreakScore[ptWinner] = +match.score.game[ptWinner]
 
-      match.score.sets[match.currentSet as keyof typeof match.score.sets][
-        ptWinner
-      ] += 1
-
-      match.score.game[0] = 0
-      match.score.game[1] = 0
-
+      increaseWinnersSetScore(ptWinner)
       match.score.isTiebreak = false
     }
   }
@@ -124,31 +130,22 @@
   const updateScore = (ptWinner: number) => {
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
-    const gameScore = match.score.game
-    const playerWonPoint = match.players[ptWinner] as 'Player1' | 'Player2'
+    const playerWonPoint = match.players[ptWinner] as 'Player 1' | 'Player 2'
     const playerAtAdvantage = match.players[
       match.score.game.findIndex(item => String(item) === 'Ad')
-    ] as 'Player1' | 'Player2' | undefined
+    ] as 'Player 1' | 'Player 2' | undefined
 
     const isAdPlayerWonPoint = playerAtAdvantage === playerWonPoint
-    const isDuece = () => gameScore.every(point => point === 40)
-
-    const resetGameScore = () => {
-      match.score.game[0] = 0
-      match.score.game[1] = 0
-    }
+    const isDuece = () => match.score.game.every(point => point === 40)
 
     if (isAdPlayerWonPoint) {
-      match.score.sets[match.currentSet as keyof typeof match.score.sets][
-        ptWinner
-      ] += 1
+      increaseWinnersSetScore(ptWinner)
       resetGameScore()
       return
     }
 
     if (playerAtAdvantage && !isAdPlayerWonPoint) {
-      match.score.game[0] = 40
-      match.score.game[1] = 40
+      match.score.game = [40, 40]
       return
     }
 
@@ -157,26 +154,19 @@
       return
     }
 
-    if (match.score.game[ptWinner] === 0) {
-      match.score.game[ptWinner] = 15
-      return
-    }
-
-    if (match.score.game[ptWinner] === 15) {
-      match.score.game[ptWinner] = 30
-      return
-    }
-
-    if (match.score.game[ptWinner] === 30) {
-      match.score.game[ptWinner] = 40
-      return
-    }
-
-    if (!isDuece()) {
-      match.score.sets[match.currentSet as keyof typeof match.score.sets][
-        ptWinner
-      ] += 1
-      resetGameScore()
+    switch (match.score.game[ptWinner]) {
+      case 0:
+        match.score.game[ptWinner] = 15
+        break
+      case 15:
+        match.score.game[ptWinner] = 30
+        break
+      case 30:
+        match.score.game[ptWinner] = 40
+        break
+      default:
+        increaseWinnersSetScore(ptWinner)
+        resetGameScore()
     }
   }
 
@@ -184,10 +174,10 @@
     Object.values(match.score.sets)
       .map(item => item.reduce(sum))
       .reduce(sum) %
-      2 !==
+      2 ===
     0
-      ? match.players[1]
-      : match.players[0]
+      ? match.players[0]
+      : match.players[1]
 
   const handleClick = (ptWinner: number) => {
     updateScore(ptWinner)
@@ -209,24 +199,44 @@
       </div>
     {/each}
   </div>
-  <div>
+  {#each Object.values(match.score.sets) as set, index}
+    {@const tiebreak = Object.values(match.score.tiebreaks)}
+    <Set {set} tiebreak={tiebreak[index]} />
+  {/each}
+
+  <!-- <div>
     <div>Set 1</div>
-    {#each match.score.sets.set1 as set1}
-      <div>{set1}</div>
+    {#each match.score.sets.set1 as set1, index}
+      <div>
+        {set1}
+        {#if match.score.tiebreaks.set1[index] > 0}
+          <sup>{match.score.tiebreaks.set1[index]}</sup>
+        {/if}
+      </div>
     {/each}
   </div>
   <div>
     <div>Set 2</div>
-    {#each match.score.sets.set2 as set2}
-      <div>{set2}</div>
+    {#each match.score.sets.set2 as set2, index}
+      <div>
+        {set2}
+        {#if match.score.tiebreaks.set2[index] > 0}
+          <sup>{match.score.tiebreaks.set2[index]}</sup>
+        {/if}
+      </div>
     {/each}
   </div>
   <div>
     <div>Set 3</div>
-    {#each match.score.sets.set3 as set3}
-      <div>{set3}</div>
+    {#each match.score.sets.set3 as set3, index}
+      <div>
+        {set3}
+        {#if match.score.tiebreaks.set3[index] > 0}
+          <sup>{match.score.tiebreaks.set3[index]}</sup>
+        {/if}
+      </div>
     {/each}
-  </div>
+  </div> -->
   <div>
     <div>Pt</div>
     {#each match.score.game as game}
