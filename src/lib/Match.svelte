@@ -24,7 +24,7 @@
   }
 
   const match: Match = {
-    players: ['Federer / Nadal', 'Tiafoe / Sock'],
+    players: ['Player 1', 'Player 2'],
     score: {
       sets: {
         set1: [0, 0],
@@ -45,7 +45,7 @@
   }
 
   const createNewMatch = () => {
-    match.players = ['Federer / Nadal', 'Tiafoe / Sock']
+    match.players = ['Player 1', 'Player 2']
     match.score = {
       sets: {
         set1: [0, 0],
@@ -70,7 +70,8 @@
   }
 
   const updateSet = (ptWinner: number) => {
-    const [player1Score, player2Score]: number[] = match.score.sets[match.currentSet]
+    const [player1Score, player2Score]: number[] =
+      match.score.sets[match.currentSet as keyof typeof match.score.sets]
 
     const isTiebreak = () => player1Score === 6 && player2Score === 6
 
@@ -104,9 +105,14 @@
       (player2TiebreakScore >= 7 && player1TiebreakScore < +player2TiebreakScore - 1)
 
     if (isTiebreakOver) {
-      match.score.tiebreaks[match.currentSet][ptWinner] = match.score.game[ptWinner]
+      const tiebreakScore =
+        match.score.tiebreaks[match.currentSet as keyof typeof match.score.tiebreaks]
 
-      match.score.sets[match.currentSet][ptWinner] += 1
+      tiebreakScore[ptWinner] = +match.score.game[ptWinner]
+
+      match.score.sets[match.currentSet as keyof typeof match.score.sets][
+        ptWinner
+      ] += 1
 
       match.score.game[0] = 0
       match.score.game[1] = 0
@@ -119,9 +125,10 @@
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
     const gameScore = match.score.game
-    const playerWonPoint = match.players[ptWinner]
-    const playerAtAdvantage =
-      match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
+    const playerWonPoint = match.players[ptWinner] as 'Player1' | 'Player2'
+    const playerAtAdvantage = match.players[
+      match.score.game.findIndex(item => String(item) === 'Ad')
+    ] as 'Player1' | 'Player2' | undefined
 
     const isAdPlayerWonPoint = playerAtAdvantage === playerWonPoint
     const isDuece = () => gameScore.every(point => point === 40)
@@ -132,7 +139,9 @@
     }
 
     if (isAdPlayerWonPoint) {
-      match.score.sets[match.currentSet][ptWinner] += 1
+      match.score.sets[match.currentSet as keyof typeof match.score.sets][
+        ptWinner
+      ] += 1
       resetGameScore()
       return
     }
@@ -164,7 +173,9 @@
     }
 
     if (!isDuece()) {
-      match.score.sets[match.currentSet][ptWinner] += 1
+      match.score.sets[match.currentSet as keyof typeof match.score.sets][
+        ptWinner
+      ] += 1
       resetGameScore()
     }
   }
@@ -266,6 +277,7 @@
   .score > div > div {
     padding: 1rem;
     text-align: center;
+    border-right: 1px solid var(--dark);
   }
   .score > div > div:nth-child(3) {
     border-top: 1px solid var(--dark);
@@ -275,15 +287,10 @@
     background-color: var(--dark);
     color: white;
   }
-  .score > div {
-    border-right: 1px solid var(--dark);
-  }
-  .score > div:last-child {
+  .score > div:last-child > div {
     border-right: none;
   }
-  .score > div:last-child > div {
-    font-weight: bold;
-  }
+  .score > div:last-child > div,
   .isServing {
     font-weight: bold;
   }
