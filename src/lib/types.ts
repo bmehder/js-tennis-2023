@@ -18,3 +18,12 @@ export type Match = {
   currentSet: string
   isInProgress: boolean
 }
+
+export type Score = {
+  sets: {
+    set1: number[]
+    set2: number[]
+    set3: number[]
+  }
+  isTiebreak: boolean
+}

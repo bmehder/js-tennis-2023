@@ -1,10 +1,11 @@
 <script lang="ts">
-  export let game: (string | number)[]
+  export let points: (string | number)[]
+  export let isTiebreak: boolean
 </script>
 
 <div>
-  <div>Pt</div>
-  {#each game as point}
+  <div>{isTiebreak ? 'Tb' : 'Pt'}</div>
+  {#each points as point}
     <div>{point}</div>
   {/each}
 </div>
