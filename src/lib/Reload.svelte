@@ -1,3 +1,8 @@
+<script lang="ts">
+  export let winner: string | undefined
+</script>
+
+<h2>Game Set Match:<br />{winner}</h2>
 <div on:click on:keypress>
   <svg
     xmlns="http://www.w3.org/2000/svg"

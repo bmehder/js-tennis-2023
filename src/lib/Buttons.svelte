@@ -1,0 +1,46 @@
+<script lang="ts">
+  import { createEventDispatcher } from 'svelte'
+
+  const dispatch = createEventDispatcher()
+  export let isInProgress = true
+</script>
+
+<div class="button-group">
+  <button
+    class:matchOver={!isInProgress}
+    disabled={!isInProgress}
+    on:click={() => dispatch('winpoint', 0)}>Player 1</button
+  >
+  <button
+    class:matchOver={!isInProgress}
+    disabled={!isInProgress}
+    on:click={() => dispatch('winpoint', 1)}>Player 2</button
+  >
+</div>
+
+<style>
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  button {
+    padding: 1rem 2rem;
+    background-color: var(--dark);
+    color: white;
+    font-size: inherit;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: scale 100ms ease-in-out;
+  }
+  button:hover:not([disabled]) {
+    scale: 0.98;
+  }
+  button.matchOver {
+    cursor: not-allowed;
+    opacity: 50%;
+  }
+</style>

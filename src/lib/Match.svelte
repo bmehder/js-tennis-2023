@@ -1,28 +1,11 @@
 <script lang="ts">
+  import type { Match } from '$lib/types'
   import { sum, isDuplicates } from '$lib/helpers'
-  import Reload from '$lib/Reload.svelte'
+  import Players from './Players.svelte'
   import Set from './Set.svelte'
-
-  type Match = {
-    players: string[]
-    score: {
-      sets: {
-        set1: number[]
-        set2: number[]
-        set3: number[]
-      }
-      tiebreaks: {
-        set1: number[]
-        set2: number[]
-        set3: number[]
-      }
-      setWinners: string[]
-      game: Array<string | number>
-      isTiebreak: boolean
-    }
-    currentSet: string
-    isInProgress: boolean
-  }
+  import Points from './Points.svelte'
+  import Buttons from './Buttons.svelte'
+  import Reload from '$lib/Reload.svelte'
 
   const match: Match = {
     players: ['Player 1', 'Player 2'],
@@ -70,7 +53,7 @@
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
   }
 
-  const resetGameScore = () => match.score.game.forEach((_, idx, arr) => (arr[idx] = 0))
+  const resetGameScore = () => (match.score.game = [0, 0])
 
   const increaseWinnersSetScore = (ptWinner: number) => {
     match.score.sets[match.currentSet as keyof typeof match.score.sets][ptWinner] += 1
@@ -122,7 +105,7 @@
     }
   }
 
-  const updateScore = (ptWinner: number) => {
+  const updateGame = (ptWinner: number) => {
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
     const playerWonPoint = match.players[ptWinner] as 'Player 1' | 'Player 2'
@@ -133,7 +116,7 @@
     const isAdPlayerWonPoint = playerAtAdvantage === playerWonPoint
     const isDuece = () => match.score.game.every(point => point === 40)
 
-    if (isAdPlayerWonPoint) {
+    if (playerAtAdvantage && isAdPlayerWonPoint) {
       increaseWinnersSetScore(ptWinner)
       resetGameScore()
       return
@@ -165,6 +148,12 @@
     }
   }
 
+  const handleWinPoint = (ptWinner: number) => {
+    updateGame(ptWinner)
+    updateSet(ptWinner)
+    getMatchWinner()
+  }
+
   $: playerServing =
     Object.values(match.score.sets)
       .map(item => item.reduce(sum))
@@ -173,120 +162,31 @@
     0
       ? match.players[0]
       : match.players[1]
-
-  const handleClick = (ptWinner: number) => {
-    updateScore(ptWinner)
-    updateSet(ptWinner)
-    getMatchWinner()
-  }
 </script>
 
-<h1>TS Tennis 2023</h1>
-<div class="score">
-  <div>
-    <div>Player</div>
-    {#each match.players as player, index}
-      <div
-        class:isServing={playerServing === match.players[index] &&
-          !match.score.isTiebreak}
-      >
-        {player}
-      </div>
-    {/each}
-  </div>
+<main>
+  <Players players={match.players} isTiebreak={match.score.isTiebreak} {playerServing} />
+
   {#each Object.values(match.score.sets) as set, index}
     {@const tiebreak = Object.values(match.score.tiebreaks)}
     <Set {set} tiebreak={tiebreak[index]} />
   {/each}
-  <div>
-    <div>Pt</div>
-    {#each match.score.game as game}
-      <div>{game}</div>
-    {/each}
-  </div>
-</div>
 
-<div class="button-group">
-  <button
-    class:matchOver={!match.isInProgress}
-    disabled={!match.isInProgress}
-    on:click={() => handleClick(0)}>Player 1</button
-  >
-  <button
-    class:matchOver={!match.isInProgress}
-    disabled={!match.isInProgress}
-    on:click={() => handleClick(1)}>Player 2</button
-  >
-</div>
+  <Points game={match.score.game} />
+</main>
+
+<Buttons
+  isInProgress={match.isInProgress}
+  on:winpoint={event => handleWinPoint(event.detail)}
+/>
 
 {#if !match.isInProgress}
-  <div class="reload">
-    <h2>Game Set Match:<br />{match.score.setWinners.at(-1)}</h2>
-    <Reload on:click={createNewMatch} />
+  {@const winner = match.score.setWinners.at(-1)}
+  <div>
+    <Reload on:click={createNewMatch} {winner} />
   </div>
 {/if}
 
 {#if match.score.isTiebreak}
   <h2>Tiebreak</h2>
 {/if}
-
-<style>
-  h1,
-  h2 {
-    text-align: center;
-    color: var(--dark);
-    margin-bottom: 0;
-  }
-  .score {
-    max-width: 600px;
-    display: grid;
-    grid-auto-flow: column;
-    margin-block: 1.5rem;
-    margin-inline: auto;
-    background-color: white;
-  }
-  .score > div > div {
-    padding: 1rem;
-    text-align: center;
-    border-right: 1px solid var(--dark);
-  }
-  .score > div > div:nth-child(3) {
-    border-top: 1px solid var(--dark);
-  }
-  .score > div > div:first-child {
-    padding: 1rem;
-    background-color: var(--dark);
-    color: white;
-  }
-  .score > div:last-child > div {
-    border-right: none;
-  }
-  .score > div:last-child > div,
-  .isServing {
-    font-weight: bold;
-  }
-  .button-group {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-  }
-  button {
-    padding: 1rem 2rem;
-    background-color: var(--dark);
-    color: white;
-    font-size: inherit;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: scale 100ms ease-in-out;
-  }
-  button:hover:not([disabled]) {
-    scale: 0.98;
-  }
-  button.matchOver {
-    cursor: not-allowed;
-    opacity: 50%;
-  }
-</style>
