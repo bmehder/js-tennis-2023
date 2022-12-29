@@ -70,15 +70,10 @@
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
   }
 
-  const resetGameScore = () => {
-    match.score.game[0] = 0
-    match.score.game[1] = 0
-  }
+  const resetGameScore = () => match.score.game.forEach((_, idx, arr) => (arr[idx] = 0))
 
   const increaseWinnersSetScore = (ptWinner: number) => {
-    match.score.sets[match.currentSet as keyof typeof match.score.sets][
-      ptWinner
-    ] += 1
+    match.score.sets[match.currentSet as keyof typeof match.score.sets][ptWinner] += 1
     resetGameScore()
   }
 
@@ -203,40 +198,6 @@
     {@const tiebreak = Object.values(match.score.tiebreaks)}
     <Set {set} tiebreak={tiebreak[index]} />
   {/each}
-
-  <!-- <div>
-    <div>Set 1</div>
-    {#each match.score.sets.set1 as set1, index}
-      <div>
-        {set1}
-        {#if match.score.tiebreaks.set1[index] > 0}
-          <sup>{match.score.tiebreaks.set1[index]}</sup>
-        {/if}
-      </div>
-    {/each}
-  </div>
-  <div>
-    <div>Set 2</div>
-    {#each match.score.sets.set2 as set2, index}
-      <div>
-        {set2}
-        {#if match.score.tiebreaks.set2[index] > 0}
-          <sup>{match.score.tiebreaks.set2[index]}</sup>
-        {/if}
-      </div>
-    {/each}
-  </div>
-  <div>
-    <div>Set 3</div>
-    {#each match.score.sets.set3 as set3, index}
-      <div>
-        {set3}
-        {#if match.score.tiebreaks.set3[index] > 0}
-          <sup>{match.score.tiebreaks.set3[index]}</sup>
-        {/if}
-      </div>
-    {/each}
-  </div> -->
   <div>
     <div>Pt</div>
     {#each match.score.game as game}

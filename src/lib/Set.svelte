@@ -1,7 +1,6 @@
 <script lang="ts">
-  export let set: any
-  export let tiebreak: any
-  console.log(tiebreak)
+  export let set: number[]
+  export let tiebreak: number[]
 </script>
 
 <div>
