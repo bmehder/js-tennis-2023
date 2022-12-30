@@ -29,7 +29,7 @@
     isInProgress: true,
   }
 
-  const createNewMatch = () => {
+  const resetMatch = () => {
     match.players = ['Player 1', 'Player 2']
     match.score = {
       sets: {
@@ -184,7 +184,7 @@
   {@const winner = match.score.setWinners.at(-1)}
   <div in:fly={{ x: 1000, delay: 400 }} out:fly={{ x: 1000, duration: 300 }}>
     {#if winner}
-      <Reload on:click={createNewMatch} {winner} />
+      <Reload on:click={resetMatch} {winner} />
     {/if}
   </div>
 {/if}
