@@ -7,7 +7,7 @@
 </script>
 
 <div class="button-group">
-  {#each Array(2) as _, index}
+  {#each { length: 2 } as _, index}
     <button
       class:matchOver={!isInProgress}
       disabled={!isInProgress}

@@ -54,14 +54,15 @@
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
   }
 
-  const resetGameScore = () => (match.score.game = [0, 0])
-
-  const increaseWinnersSetScore = (ptWinner: number) => {
-    match.score.sets[match.currentSet][ptWinner] += 1
-    resetGameScore()
+  const resetGameScore = () => {
+    match.score.game = [0, 0]
   }
 
-  const updateSet = (ptWinner: number) => {
+  const increaseWinnersSetScore = (ptWinner: 0 | 1) => {
+    match.score.sets[match.currentSet][ptWinner] += 1
+  }
+
+  const updateSet = (ptWinner: 0 | 1) => {
     const [player1Score, player2Score]: number[] = match.score.sets[match.currentSet]
 
     const isTiebreak = () => [player1Score, player2Score].every(score => score === 6)
@@ -86,11 +87,12 @@
     if (isSetOver()) {
       updateSetWinners()
       increaseCurrentSet()
+      resetGameScore()
     }
   }
 
-  const updateTiebreak = (ptWinner: number) => {
-    match.score.game[ptWinner] = +match.score.game[ptWinner] + 1
+  const updateTiebreak = (ptWinner: 0 | 1) => {
+    match.score.game[ptWinner] = +match.score.game.at(ptWinner)! + 1
 
     const [player1Score, player2Score] = match.score.game
 
@@ -101,17 +103,18 @@
     if (isTiebreakOver) {
       const tiebreakScore = match.score.tiebreaks[match.currentSet]
 
-      tiebreakScore[ptWinner] = +match.score.game[ptWinner]
+      tiebreakScore[ptWinner] = +match.score.game.at(ptWinner)!
 
       increaseWinnersSetScore(ptWinner)
+      resetGameScore()
       match.score.isTiebreak = false
     }
   }
 
-  const updateGame = (ptWinner: number) => {
+  const updateGame = (ptWinner: 0 | 1) => {
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
-    const playerWonPoint = match.players[ptWinner]
+    const playerWonPoint = match.players.at(ptWinner)
     const playerAtAdvantage =
       match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
 
@@ -150,7 +153,7 @@
     }
   }
 
-  const handleWinPoint = (ptWinner: number) => {
+  const handleWinPoint = (ptWinner: 0 | 1) => {
     updateGame(ptWinner)
     updateSet(ptWinner)
     updateIsInProgress()
