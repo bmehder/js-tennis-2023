@@ -2,20 +2,18 @@
   import { createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher()
+
   export let isInProgress = true
 </script>
 
 <div class="button-group">
-  <button
-    class:matchOver={!isInProgress}
-    disabled={!isInProgress}
-    on:click={() => dispatch('winpoint', 0)}>Player 1</button
-  >
-  <button
-    class:matchOver={!isInProgress}
-    disabled={!isInProgress}
-    on:click={() => dispatch('winpoint', 1)}>Player 2</button
-  >
+  {#each Array(2) as _, index}
+    <button
+      class:matchOver={!isInProgress}
+      disabled={!isInProgress}
+      on:click={() => dispatch('winpoint', index)}>Player {index + 1}</button
+    >
+  {/each}
 </div>
 
 <style>

@@ -1,5 +1,5 @@
 export type Match = {
-  players: string[]
+  players: ['Player 1', 'Player 2']
   score: {
     sets: {
       set1: number[]
@@ -11,11 +11,11 @@ export type Match = {
       set2: number[]
       set3: number[]
     }
-    setWinners: string[]
-    game: Array<string | number>
+    setWinners: ('Player 1' | 'Player 2')[]
+    game: (number | 'Ad')[]
     isTiebreak: boolean
   }
-  currentSet: string
+  currentSet: 'set1' | 'set2' | 'set3'
   isInProgress: boolean
 }
 

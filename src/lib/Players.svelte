@@ -2,17 +2,14 @@
   import { sum } from '$lib/helpers'
   import type { Score } from '$lib/types'
 
-  export let players: string[]
+  export let players: ['Player 1', 'Player 2']
   export let score: Score
 
+  // prettier-ignore
   $: playerServing =
     Object.values(score.sets)
       .map(item => item.reduce(sum))
-      .reduce(sum) %
-      2 ===
-    0
-      ? players[0]
-      : players[1]
+      .reduce(sum) % 2 === 0 ? players[0] : players[1]
 </script>
 
 <div>

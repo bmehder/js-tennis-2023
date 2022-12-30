@@ -50,19 +50,19 @@
     match.isInProgress = true
   }
 
-  const updateIsInProgress = () =>
+  const updateIsInProgress = () => {
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
+  }
 
   const resetGameScore = () => (match.score.game = [0, 0])
 
   const increaseWinnersSetScore = (ptWinner: number) => {
-    match.score.sets[match.currentSet as keyof typeof match.score.sets][ptWinner] += 1
+    match.score.sets[match.currentSet][ptWinner] += 1
     resetGameScore()
   }
 
   const updateSet = (ptWinner: number) => {
-    const [player1Score, player2Score]: number[] =
-      match.score.sets[match.currentSet as keyof typeof match.score.sets]
+    const [player1Score, player2Score]: number[] = match.score.sets[match.currentSet]
 
     const isTiebreak = () => [player1Score, player2Score].every(score => score === 6)
 
@@ -99,8 +99,7 @@
       (player2Score >= 7 && player1Score < +player2Score - 1)
 
     if (isTiebreakOver) {
-      const tiebreakScore =
-        match.score.tiebreaks[match.currentSet as keyof typeof match.score.tiebreaks]
+      const tiebreakScore = match.score.tiebreaks[match.currentSet]
 
       tiebreakScore[ptWinner] = +match.score.game[ptWinner]
 
@@ -112,21 +111,20 @@
   const updateGame = (ptWinner: number) => {
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
-    const playerWonPoint = match.players[ptWinner] as 'Player 1' | 'Player 2'
-    const playerAtAdvantage = match.players[
-      match.score.game.findIndex(item => String(item) === 'Ad')
-    ] as 'Player 1' | 'Player 2' | undefined
+    const playerWonPoint = match.players[ptWinner]
+    const playerAtAdvantage =
+      match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
 
-    const isAdPlayerWonPoint = playerAtAdvantage === playerWonPoint
+    const isAdPlayerWonPoint = () => playerAtAdvantage === playerWonPoint
     const isDuece = () => match.score.game.every(point => point === 40)
 
-    if (playerAtAdvantage && isAdPlayerWonPoint) {
+    if (playerAtAdvantage && isAdPlayerWonPoint()) {
       increaseWinnersSetScore(ptWinner)
       resetGameScore()
       return
     }
 
-    if (playerAtAdvantage && !isAdPlayerWonPoint) {
+    if (playerAtAdvantage && !isAdPlayerWonPoint()) {
       match.score.game = [40, 40]
       return
     }
@@ -180,7 +178,10 @@
 {/if}
 
 {#if !match.isInProgress}
+  {@const winner = match.score.setWinners.at(-1)}
   <div in:fly={{ x: 1000, delay: 400 }} out:fly={{ x: 1000, duration: 300 }}>
-    <Reload on:click={createNewMatch} winner={match.score.setWinners.at(-1)} />
+    {#if winner}
+      <Reload on:click={createNewMatch} {winner} />
+    {/if}
   </div>
 {/if}
