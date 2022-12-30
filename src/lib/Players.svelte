@@ -4,6 +4,7 @@
 
   export let players: ['Player 1', 'Player 2']
   export let score: Score
+  export let isInProgress: boolean
 
   // prettier-ignore
   $: playerServing =
@@ -15,8 +16,9 @@
 <div>
   <div>Player</div>
   {#each players as player, index}
-    {@const isServing = playerServing === players[index] && !score.isTiebreak}
-    <div class:isServing>
+    {@const isServing =
+      playerServing === players[index] && !score.isTiebreak && isInProgress}
+    <div class:isServing contenteditable class={'player' + (index + 1)}>
       {player}
     </div>
   {/each}

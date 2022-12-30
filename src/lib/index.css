@@ -51,10 +51,6 @@ main > div:last-child > div {
   border-right: none;
 }
 
-main > div:last-child > div {
-  font-weight: bold;
-}
-
 sup {
   line-height: 0;
 }

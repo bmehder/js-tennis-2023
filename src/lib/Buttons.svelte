@@ -41,4 +41,7 @@
     cursor: not-allowed;
     opacity: 50%;
   }
+  button:focus {
+    outline: 1px solid var(--dark);
+  }
 </style>

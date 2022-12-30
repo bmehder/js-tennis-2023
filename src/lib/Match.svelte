@@ -6,7 +6,7 @@
   import Set from './Set.svelte'
   import Points from './Points.svelte'
   import Buttons from './Buttons.svelte'
-  import Reload from '$lib/Reload.svelte'
+  import Winner from '$lib/Winner.svelte'
 
   const match: Match = {
     players: ['Player 1', 'Player 2'],
@@ -161,7 +161,11 @@
 </script>
 
 <main>
-  <Players players={match.players} score={match.score} />
+  <Players
+    players={match.players}
+    score={match.score}
+    isInProgress={match.isInProgress}
+  />
 
   {#each Object.values(match.score.sets) as set, index}
     {@const tiebreak = Object.values(match.score.tiebreaks)}
@@ -175,7 +179,11 @@
     />
   {/each}
 
-  <Points points={match.score.game} isTiebreak={match.score.isTiebreak} />
+  <Points
+    points={match.score.game}
+    isTiebreak={match.score.isTiebreak}
+    isInProgress={match.isInProgress}
+  />
 </main>
 
 {#if match.isInProgress}
@@ -191,7 +199,11 @@
   {@const winner = match.score.setWinners.at(-1)}
   <div in:fly={{ x: 1000, delay: 400 }} out:fly={{ x: 1000, duration: 300 }}>
     {#if winner}
-      <Reload on:click={resetMatch} {winner} />
+      <Winner
+        on:click={resetMatch}
+        on:keypress={evt => evt.key === 'Enter' && resetMatch()}
+        {winner}
+      />
     {/if}
   </div>
 {/if}

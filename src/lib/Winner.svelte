@@ -1,9 +1,12 @@
 <script lang="ts">
   export let winner: 'Player 1' | 'Player 2'
+
+  const selector = winner.toLowerCase().replace(/\s/g, '')
+  const playerName = document.querySelector(`.${selector}`)?.textContent
 </script>
 
-<h2>Game Set Match:<br />{winner}</h2>
-<div on:click on:keypress>
+<h2>Game Set Match:<br />{playerName}</h2>
+<a href={'#'} on:click|preventDefault on:keypress>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -17,15 +20,22 @@
     />
   </svg>
   Create New Match
-</div>
+</a>
 
 <style>
-  div {
+  a {
+    max-width: fit-content;
     display: grid;
     place-items: center;
     gap: 0.5rem;
     padding-block: 0.5rem;
+    padding-inline: 0.5rem;
+    margin-inline: auto;
+    color: var(--dark);
     cursor: pointer;
+  }
+  a:focus {
+    outline: 1px solid var(--dark);
   }
   svg {
     width: 3rem;
