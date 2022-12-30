@@ -3,7 +3,7 @@
   import { fly } from 'svelte/transition'
   import { isDuplicates } from '$lib/helpers'
   import Players from './Players.svelte'
-  import Sets from './Sets.svelte'
+  import Set from './Set.svelte'
   import Points from './Points.svelte'
   import Buttons from './Buttons.svelte'
   import Reload from '$lib/Reload.svelte'
@@ -165,7 +165,14 @@
 
   {#each Object.values(match.score.sets) as set, index}
     {@const tiebreak = Object.values(match.score.tiebreaks)}
-    <Sets {set} tiebreak={tiebreak[index]} setNumber={index} />
+    {@const setWinner = match.score.setWinners[index]}
+    <Set
+      {set}
+      tiebreak={tiebreak[index]}
+      setNumber={index}
+      players={match.players}
+      {setWinner}
+    />
   {/each}
 
   <Points points={match.score.game} isTiebreak={match.score.isTiebreak} />
