@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Confetti } from 'svelte-confetti'
   export let winner: 'Player 1' | 'Player 2'
 
   const displayName = document.querySelector(
@@ -8,6 +9,18 @@
 
 <h2>Game Set Match:<br />{displayName}</h2>
 <a href={'#'} on:click|preventDefault on:keypress>
+  <div>
+    <Confetti
+      x={[-5, 5]}
+      y={[0, 0.1]}
+      size={32}
+      delay={[1000, 2000]}
+      infinite
+      duration="5000"
+      amount="200"
+      fallDistance="100vh"
+    />
+  </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -25,18 +38,31 @@
 
 <style>
   a {
+    position: relative;
     max-width: fit-content;
     display: grid;
     place-items: center;
     gap: 0.5rem;
+    margin-block: 0.5rem;
     padding-block: 0.5rem;
     padding-inline: 0.5rem;
     margin-inline: auto;
     color: var(--dark);
     cursor: pointer;
   }
-  a:focus {
+  a:is(:hover, :focus) {
     outline: 1px solid var(--dark);
+  }
+  div {
+    position: fixed;
+    top: -50px;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
   }
   svg {
     width: 3rem;
