@@ -2,53 +2,15 @@
   import type { Match } from '$lib/types'
   import { fly } from 'svelte/transition'
   import { isDuplicates } from '$lib/helpers'
-  import Players from './Players.svelte'
-  import Set from './Set.svelte'
-  import Points from './Points.svelte'
-  import Buttons from './Buttons.svelte'
-  import Winner from '$lib/Winner.svelte'
+  import { createNewMatch } from '$lib/models/matches'
 
-  const match: Match = {
-    players: ['Player 1', 'Player 2'],
-    score: {
-      sets: {
-        set1: [0, 0],
-        set2: [0, 0],
-        set3: [0, 0],
-      },
-      tiebreaks: {
-        set1: [0, 0],
-        set2: [0, 0],
-        set3: [0, 0],
-      },
-      setWinners: [],
-      game: [0, 0],
-      isTiebreak: false,
-    },
-    currentSet: 'set1',
-    isInProgress: true,
-  }
+  import Players from '$lib/Match/Players.svelte'
+  import Set from '$lib/Match/Set.svelte'
+  import Points from '$lib/Match/Points.svelte'
+  import Buttons from '$lib/Match/Buttons.svelte'
+  import Winner from '$lib/Match/Winner.svelte'
 
-  const resetMatch = () => {
-    match.players = ['Player 1', 'Player 2']
-    match.score = {
-      sets: {
-        set1: [0, 0],
-        set2: [0, 0],
-        set3: [0, 0],
-      },
-      tiebreaks: {
-        set1: [0, 0],
-        set2: [0, 0],
-        set3: [0, 0],
-      },
-      setWinners: [],
-      game: [0, 0],
-      isTiebreak: false,
-    }
-    match.currentSet = 'set1'
-    match.isInProgress = true
-  }
+  let match: Match = createNewMatch()
 
   const updateIsInProgress = () => {
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
@@ -200,8 +162,8 @@
   <div in:fly={{ x: 1000, delay: 400 }} out:fly={{ x: 1000, duration: 300 }}>
     {#if winner}
       <Winner
-        on:click={resetMatch}
-        on:keypress={evt => evt.key === 'Enter' && resetMatch()}
+        on:click={() => (match = createNewMatch())}
+        on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
         {winner}
       />
     {/if}

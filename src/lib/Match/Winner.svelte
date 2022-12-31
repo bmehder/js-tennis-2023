@@ -1,11 +1,12 @@
 <script lang="ts">
   export let winner: 'Player 1' | 'Player 2'
 
-  const selector = winner.toLowerCase().replace(/\s/g, '')
-  const playerName = document.querySelector(`.${selector}`)?.textContent
+  const displayName = document.querySelector(
+    `[data-player="${winner.at(-1)}"]`
+  )?.textContent
 </script>
 
-<h2>Game Set Match:<br />{playerName}</h2>
+<h2>Game Set Match:<br />{displayName}</h2>
 <a href={'#'} on:click|preventDefault on:keypress>
   <svg
     xmlns="http://www.w3.org/2000/svg"

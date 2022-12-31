@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Match from '$lib/Match.svelte'
+  // import { match } from '$lib/models/matches'
+  import Match from '$lib/Match/Match.svelte'
 </script>
 
 <Match />

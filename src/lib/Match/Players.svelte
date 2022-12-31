@@ -18,7 +18,7 @@
   {#each players as player, index}
     {@const isServing =
       playerServing === players[index] && !score.isTiebreak && isInProgress}
-    <div class:isServing contenteditable class={'player' + (index + 1)}>
+    <div class:isServing data-player={index + 1} contenteditable>
       {player}
     </div>
   {/each}
