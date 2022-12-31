@@ -7,7 +7,7 @@
 </script>
 
 <div>
-  <div>Set {++setNumber}</div>
+  <div>Set {setNumber}</div>
   {#each set as playerScore, player}
     <div class:isWinner={setWinner === players[player]}>
       {playerScore}

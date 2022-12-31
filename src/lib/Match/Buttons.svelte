@@ -2,17 +2,11 @@
   import { createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher()
-
-  export let isInProgress = true
 </script>
 
 <div class="button-group">
   {#each Array(2) as _, index}
-    <button
-      class:matchOver={!isInProgress}
-      disabled={!isInProgress}
-      on:click={() => dispatch('point', index)}
-    >
+    <button on:click={() => dispatch('point', index)}>
       Player {index + 1}
     </button>
   {/each}
@@ -38,10 +32,6 @@
   }
   button:hover:not([disabled]) {
     scale: 0.98;
-  }
-  button.matchOver {
-    cursor: not-allowed;
-    opacity: 50%;
   }
   button:focus {
     outline: 1px solid var(--dark);

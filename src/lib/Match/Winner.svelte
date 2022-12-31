@@ -9,18 +9,6 @@
 
 <h2>Game Set Match:<br />{displayName}</h2>
 <a href={'#'} on:click|preventDefault on:keypress>
-  <div>
-    <Confetti
-      x={[-5, 5]}
-      y={[0, 0.1]}
-      size={32}
-      delay={[1000, 2000]}
-      infinite
-      duration="5000"
-      amount="200"
-      fallDistance="100vh"
-    />
-  </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -35,6 +23,18 @@
   </svg>
   Create New Match
 </a>
+<div>
+  <Confetti
+    x={[-5, 5]}
+    y={[0, 0.1]}
+    size={32}
+    delay={[1000, 2000]}
+    infinite
+    duration="5000"
+    amount="200"
+    fallDistance="100vh"
+  />
+</div>
 
 <style>
   a {

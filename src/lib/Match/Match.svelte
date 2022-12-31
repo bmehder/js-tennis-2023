@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Match } from '$lib/types'
+  import type { Match } from '$lib/Match/types'
   import { fly } from 'svelte/transition'
   import { isDuplicates } from '$lib/helpers'
-  import { createNewMatch } from '$lib/models/match'
+  import { createNewMatch } from '$lib/Match/createNewMatch'
 
   import Players from '$lib/Match/Players.svelte'
   import Set from '$lib/Match/Set.svelte'
@@ -11,10 +11,6 @@
   import Winner from '$lib/Match/Winner.svelte'
 
   let match: Match = createNewMatch()
-
-  const resetGameScore = () => {
-    match.score.game = [0, 0]
-  }
 
   const updateMatch = () => {
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
@@ -43,9 +39,8 @@
     isTiebreak() && (match.score.isTiebreak = true)
 
     if (isSetOver()) {
-      updateSetWinners()
       increaseCurrentSet()
-      resetGameScore()
+      updateSetWinners()
     }
   }
 
@@ -54,22 +49,33 @@
       match.score.sets[match.currentSet][ptWinner] += 1
     }
 
+    const resetGameScore = () => {
+      match.score.game = [0, 0]
+    }
+
+    const updateGameScoreToDuece = () => {
+      match.score.game = [40, 40]
+    }
+
     const updateTiebreak = (ptWinner: 0 | 1) => {
       match.score.game[ptWinner] = +match.score.game.at(ptWinner)! + 1
 
-      const [player1Score, player2Score] = match.score.game
+      const isTiebreakOver = () => {
+        const [player1Score, player2Score] = match.score.game
 
-      const ptLoser = ptWinner === 0 ? 1 : 0
+        return (
+          (player1Score >= 7 && player2Score < +player1Score - 1) ||
+          (player2Score >= 7 && player1Score < +player2Score - 1)
+        )
+      }
 
-      const isTiebreakOver =
-        (player1Score >= 7 && player2Score < +player1Score - 1) ||
-        (player2Score >= 7 && player1Score < +player2Score - 1)
+      if (isTiebreakOver()) {
+        const ptLoser = ptWinner === 0 ? 1 : 0
+        const tiebreakScoreCurrentSet = match.score.tiebreaks[match.currentSet]
 
-      if (isTiebreakOver) {
-        const tiebreakScore = match.score.tiebreaks[match.currentSet]
+        tiebreakScoreCurrentSet[ptWinner] = +match.score.game.at(ptWinner)!
 
-        tiebreakScore[ptWinner] = +match.score.game.at(ptWinner)!
-        tiebreakScore[ptLoser] = +match.score.game.at(ptLoser)!
+        tiebreakScoreCurrentSet[ptLoser] = +match.score.game.at(ptLoser)!
 
         increaseWinnersSetScore(ptWinner)
         resetGameScore()
@@ -79,21 +85,22 @@
 
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
-    const playerWonPoint = match.players.at(ptWinner)
+    const playerWhoWonPoint = match.players.at(ptWinner)!
     const playerAtAdvantage =
       match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
 
-    const isAdPlayerWonPoint = () => playerAtAdvantage === playerWonPoint
+    const isPlayerAtAdvantagePlayerWonPoint = () =>
+      playerAtAdvantage === playerWhoWonPoint
     const isDuece = () => match.score.game.every(point => point === 40)
 
-    if (playerAtAdvantage && isAdPlayerWonPoint()) {
+    if (isPlayerAtAdvantagePlayerWonPoint()) {
       increaseWinnersSetScore(ptWinner)
       resetGameScore()
       return
     }
 
-    if (playerAtAdvantage && !isAdPlayerWonPoint()) {
-      match.score.game = [40, 40]
+    if (playerAtAdvantage && !isPlayerAtAdvantagePlayerWonPoint()) {
+      updateGameScoreToDuece()
       return
     }
 
@@ -126,11 +133,7 @@
 </script>
 
 <main>
-  <Players
-    players={match.players}
-    score={match.score}
-    isInProgress={match.isInProgress}
-  />
+  <Players {match} />
 
   {#each Object.values(match.score.sets) as set, index}
     {@const tiebreak = Object.values(match.score.tiebreaks)}
@@ -138,37 +141,30 @@
     <Set
       {set}
       tiebreak={tiebreak[index]}
-      setNumber={index}
+      setNumber={index + 1}
       players={match.players}
       {setWinner}
     />
   {/each}
 
-  <Game
-    points={match.score.game}
-    isTiebreak={match.score.isTiebreak}
-    isInProgress={match.isInProgress}
-  />
+  <Game {match} />
 </main>
 
 {#if match.isInProgress}
-  <div in:fly={{ x: -1000, delay: 400 }} out:fly={{ x: -1000, duration: 300 }}>
-    <Buttons
-      isInProgress={match.isInProgress}
-      on:point={event => handlePoint(event.detail)}
-    />
+  {@const inTransition = { x: -1000, delay: 400 }}
+  {@const outTransition = { x: -1000, duration: 300 }}
+  <div in:fly={inTransition} out:fly={outTransition}>
+    <Buttons on:point={event => handlePoint(event.detail)} />
   </div>
-{/if}
-
-{#if !match.isInProgress}
-  {@const winner = match.score.setWinners.at(-1)}
-  <div in:fly={{ x: 1000, delay: 400 }} out:fly={{ x: 1000, duration: 300 }}>
-    {#if winner}
-      <Winner
-        on:click={() => (match = createNewMatch())}
-        on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
-        {winner}
-      />
-    {/if}
+{:else}
+  {@const winner = match.score.setWinners.at(-1) ?? 'Player 1'}
+  {@const inTransition = { x: 1000, delay: 400 }}
+  {@const outTransition = { y: 1000, duration: 300 }}
+  <div in:fly={inTransition} out:fly={outTransition}>
+    <Winner
+      on:click={() => (match = createNewMatch())}
+      on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
+      {winner}
+    />
   </div>
 {/if}

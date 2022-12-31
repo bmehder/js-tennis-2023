@@ -1,13 +1,13 @@
 <script lang="ts">
-  export let points: (string | number)[]
-  export let isTiebreak: boolean
-  export let isInProgress: boolean
+  import type { Match } from './types'
+
+  export let match: Match
 </script>
 
 <div>
-  <div>{isTiebreak ? 'Tb' : 'Pt'}</div>
-  {#each points as point}
-    <div class:bold={isInProgress}>{point}</div>
+  <div>{match.score.isTiebreak ? 'Tb' : 'Pt'}</div>
+  {#each match.score.game as point}
+    <div class:bold={match.isInProgress}>{point}</div>
   {/each}
 </div>
 
