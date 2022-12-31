@@ -7,12 +7,14 @@
 </script>
 
 <div class="button-group">
-  {#each { length: 2 } as _, index}
+  {#each Array(2) as _, index}
     <button
       class:matchOver={!isInProgress}
       disabled={!isInProgress}
-      on:click={() => dispatch('winpoint', index)}>Player {index + 1}</button
+      on:click={() => dispatch('point', index)}
     >
+      Player {index + 1}
+    </button>
   {/each}
 </div>
 

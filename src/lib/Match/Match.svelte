@@ -6,22 +6,18 @@
 
   import Players from '$lib/Match/Players.svelte'
   import Set from '$lib/Match/Set.svelte'
-  import Points from '$lib/Match/Points.svelte'
+  import Game from '$lib/Match/Game.svelte'
   import Buttons from '$lib/Match/Buttons.svelte'
   import Winner from '$lib/Match/Winner.svelte'
 
   let match: Match = createNewMatch()
 
-  const updateIsInProgress = () => {
-    isDuplicates(match.score.setWinners) && (match.isInProgress = false)
-  }
-
   const resetGameScore = () => {
     match.score.game = [0, 0]
   }
 
-  const increaseWinnersSetScore = (ptWinner: 0 | 1) => {
-    match.score.sets[match.currentSet][ptWinner] += 1
+  const updateMatch = () => {
+    isDuplicates(match.score.setWinners) && (match.isInProgress = false)
   }
 
   const updateSet = (ptWinner: 0 | 1) => {
@@ -53,27 +49,30 @@
     }
   }
 
-  const updateTiebreak = (ptWinner: 0 | 1) => {
-    match.score.game[ptWinner] = +match.score.game.at(ptWinner)! + 1
-
-    const [player1Score, player2Score] = match.score.game
-
-    const isTiebreakOver =
-      (player1Score >= 7 && player2Score < +player1Score - 1) ||
-      (player2Score >= 7 && player1Score < +player2Score - 1)
-
-    if (isTiebreakOver) {
-      const tiebreakScore = match.score.tiebreaks[match.currentSet]
-
-      tiebreakScore[ptWinner] = +match.score.game.at(ptWinner)!
-
-      increaseWinnersSetScore(ptWinner)
-      resetGameScore()
-      match.score.isTiebreak = false
-    }
-  }
-
   const updateGame = (ptWinner: 0 | 1) => {
+    const increaseWinnersSetScore = (ptWinner: 0 | 1) => {
+      match.score.sets[match.currentSet][ptWinner] += 1
+    }
+    const updateTiebreak = (ptWinner: 0 | 1) => {
+      match.score.game[ptWinner] = +match.score.game.at(ptWinner)! + 1
+
+      const [player1Score, player2Score] = match.score.game
+
+      const isTiebreakOver =
+        (player1Score >= 7 && player2Score < +player1Score - 1) ||
+        (player2Score >= 7 && player1Score < +player2Score - 1)
+
+      if (isTiebreakOver) {
+        const tiebreakScore = match.score.tiebreaks[match.currentSet]
+
+        tiebreakScore[ptWinner] = +match.score.game.at(ptWinner)!
+
+        increaseWinnersSetScore(ptWinner)
+        resetGameScore()
+        match.score.isTiebreak = false
+      }
+    }
+
     if (match.score.isTiebreak) return updateTiebreak(ptWinner)
 
     const playerWonPoint = match.players.at(ptWinner)
@@ -115,10 +114,10 @@
     }
   }
 
-  const handleWinPoint = (ptWinner: 0 | 1) => {
+  const handlePoint = (ptWinner: 0 | 1) => {
     updateGame(ptWinner)
     updateSet(ptWinner)
-    updateIsInProgress()
+    updateMatch()
   }
 </script>
 
@@ -141,7 +140,7 @@
     />
   {/each}
 
-  <Points
+  <Game
     points={match.score.game}
     isTiebreak={match.score.isTiebreak}
     isInProgress={match.isInProgress}
@@ -152,7 +151,7 @@
   <div in:fly={{ x: -1000, delay: 400 }} out:fly={{ x: -1000, duration: 300 }}>
     <Buttons
       isInProgress={match.isInProgress}
-      on:winpoint={event => handleWinPoint(event.detail)}
+      on:point={event => handlePoint(event.detail)}
     />
   </div>
 {/if}
