@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { sum } from '$lib/helpers'
+
   export let set: number[]
   export let tiebreak: number[]
   export let setNumber: number

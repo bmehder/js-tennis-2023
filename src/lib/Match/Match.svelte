@@ -2,7 +2,7 @@
   import type { Match } from '$lib/types'
   import { fly } from 'svelte/transition'
   import { isDuplicates } from '$lib/helpers'
-  import { createNewMatch } from '$lib/models/matches'
+  import { createNewMatch } from '$lib/models/match'
 
   import Players from '$lib/Match/Players.svelte'
   import Set from '$lib/Match/Set.svelte'
@@ -53,10 +53,13 @@
     const increaseWinnersSetScore = (ptWinner: 0 | 1) => {
       match.score.sets[match.currentSet][ptWinner] += 1
     }
+
     const updateTiebreak = (ptWinner: 0 | 1) => {
       match.score.game[ptWinner] = +match.score.game.at(ptWinner)! + 1
 
       const [player1Score, player2Score] = match.score.game
+
+      const ptLoser = ptWinner === 0 ? 1 : 0
 
       const isTiebreakOver =
         (player1Score >= 7 && player2Score < +player1Score - 1) ||
@@ -66,6 +69,7 @@
         const tiebreakScore = match.score.tiebreaks[match.currentSet]
 
         tiebreakScore[ptWinner] = +match.score.game.at(ptWinner)!
+        tiebreakScore[ptLoser] = +match.score.game.at(ptLoser)!
 
         increaseWinnersSetScore(ptWinner)
         resetGameScore()
