@@ -11,7 +11,7 @@
   {#each set as playerScore, player}
     <div class:isWinner={setWinner === players[player]}>
       {playerScore}
-      {#if tiebreak[player] > 0 && setWinner !== players[player]}
+      {#if tiebreak.some(pt => pt > 0) && setWinner !== players[player]}
         <sup>{tiebreak[player]}</sup>
       {/if}
     </div>

@@ -5,7 +5,7 @@ export const createNewMatch = (): Match => {
     players: ['Player 1', 'Player 2'],
     score: {
       sets: {
-        set1: [0, 0],
+        set1: [5, 5],
         set2: [0, 0],
         set3: [0, 0],
       },
