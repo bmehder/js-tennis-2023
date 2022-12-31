@@ -2,7 +2,7 @@
   import type { Match } from '$lib/Match/types'
   import { fly } from 'svelte/transition'
   import { isDuplicates } from '$lib/helpers'
-  import { createNewMatch } from '$lib/Match/createNewMatch'
+  import createNewMatch from '$lib/Match/createNewMatch'
 
   import Players from '$lib/Match/Players.svelte'
   import Set from '$lib/Match/Set.svelte'
@@ -157,14 +157,16 @@
     <Buttons on:point={event => handlePoint(event.detail)} />
   </div>
 {:else}
-  {@const winner = match.score.setWinners.at(-1) ?? 'Player 1'}
+  {@const winner = match.score.setWinners.at(-1)}
   {@const inTransition = { x: 1000, delay: 400 }}
   {@const outTransition = { y: 1000, duration: 300 }}
   <div in:fly={inTransition} out:fly={outTransition}>
-    <Winner
-      on:click={() => (match = createNewMatch())}
-      on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
-      {winner}
-    />
+    {#if winner}
+      <Winner
+        {winner}
+        on:click={() => (match = createNewMatch())}
+        on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
+      />
+    {/if}
   </div>
 {/if}
