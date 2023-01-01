@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Match } from '$lib/Match/types'
   import { fly } from 'svelte/transition'
   import { quartInOut } from 'svelte/easing'
   import { isDuplicates } from '$lib/helpers'
@@ -11,7 +10,7 @@
   import Buttons from '$lib/Match/Buttons.svelte'
   import Winner from '$lib/Match/Winner.svelte'
 
-  let match: Match = createNewMatch()
+  let match = createNewMatch()
 
   const updateMatch = () => {
     isDuplicates(match.score.setWinners) && (match.isInProgress = false)
@@ -89,17 +88,16 @@
     const playerAtAdvantage =
       match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
 
-    const isPlayerAtAdvantagePlayerWonPoint = () =>
-      playerAtAdvantage === playerWhoWonPoint
+    const isPlayerAtAdvantageWonPoint = () => playerAtAdvantage === playerWhoWonPoint
     const isDuece = () => match.score.game.every(point => point === 40)
 
-    if (isPlayerAtAdvantagePlayerWonPoint()) {
+    if (isPlayerAtAdvantageWonPoint()) {
       increaseWinnersSetScore(ptWinner)
       resetGameScore()
       return
     }
 
-    if (playerAtAdvantage && !isPlayerAtAdvantagePlayerWonPoint()) {
+    if (playerAtAdvantage && !isPlayerAtAdvantageWonPoint()) {
       updateGameToDuece()
       return
     }
