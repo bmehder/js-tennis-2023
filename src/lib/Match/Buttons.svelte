@@ -6,7 +6,7 @@
 
 <div class="button-group">
   {#each Array(2) as _, index}
-    <button on:click={() => dispatch('point', index)}>
+    <button on:click={() => dispatch('point', index)} on:keypress>
       Player {index + 1}
     </button>
   {/each}

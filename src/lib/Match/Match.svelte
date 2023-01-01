@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Match } from '$lib/Match/types'
   import { fly } from 'svelte/transition'
+  import { quartInOut } from 'svelte/easing'
   import { isDuplicates } from '$lib/helpers'
   import createNewMatch from '$lib/Match/createNewMatch'
 
@@ -53,7 +54,7 @@
       match.score.game = [0, 0]
     }
 
-    const updateGameScoreToDuece = () => {
+    const updateGameToDuece = () => {
       match.score.game = [40, 40]
     }
 
@@ -74,7 +75,6 @@
         const tiebreakScoreCurrentSet = match.score.tiebreaks[match.currentSet]
 
         tiebreakScoreCurrentSet[ptWinner] = +match.score.game.at(ptWinner)!
-
         tiebreakScoreCurrentSet[ptLoser] = +match.score.game.at(ptLoser)!
 
         increaseWinnersSetScore(ptWinner)
@@ -100,7 +100,7 @@
     }
 
     if (playerAtAdvantage && !isPlayerAtAdvantagePlayerWonPoint()) {
-      updateGameScoreToDuece()
+      updateGameToDuece()
       return
     }
 
@@ -130,6 +130,11 @@
     updateSet(ptWinner)
     updateMatch()
   }
+
+  const handleKeypress = (event: KeyboardEvent) => {
+    event.key === ',' && handlePoint(0)
+    event.key === '.' && handlePoint(1)
+  }
 </script>
 
 <main>
@@ -139,11 +144,11 @@
     {@const tiebreak = Object.values(match.score.tiebreaks)}
     {@const setWinner = match.score.setWinners[index]}
     <Set
+      {setWinner}
       {set}
       tiebreak={tiebreak[index]}
       setNumber={index + 1}
       players={match.players}
-      {setWinner}
     />
   {/each}
 
@@ -152,13 +157,13 @@
 
 {#if match.isInProgress}
   {@const inTransition = { x: -1000, delay: 400 }}
-  {@const outTransition = { x: -1000, duration: 300 }}
+  {@const outTransition = { x: -1000, duration: 300, easing: quartInOut }}
   <div in:fly={inTransition} out:fly={outTransition}>
-    <Buttons on:point={event => handlePoint(event.detail)} />
+    <Buttons on:point={event => handlePoint(event.detail)} on:keypress={handleKeypress} />
   </div>
 {:else}
   {@const winner = match.score.setWinners.at(-1)}
-  {@const inTransition = { x: 1000, delay: 400 }}
+  {@const inTransition = { x: 1000, delay: 400, easing: quartInOut }}
   {@const outTransition = { y: 1000, duration: 300 }}
   <div in:fly={inTransition} out:fly={outTransition}>
     {#if winner}

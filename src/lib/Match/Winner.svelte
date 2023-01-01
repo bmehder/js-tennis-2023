@@ -8,7 +8,7 @@
 </script>
 
 <h2>Game Set Match:<br />{displayName}</h2>
-<a href={'#'} on:click|preventDefault on:keypress>
+<button on:click|preventDefault on:keypress>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -22,7 +22,7 @@
     />
   </svg>
   Create New Match
-</a>
+</button>
 <div>
   <Confetti
     x={[-5, 5]}
@@ -37,8 +37,7 @@
 </div>
 
 <style>
-  a {
-    position: relative;
+  button {
     max-width: fit-content;
     display: grid;
     place-items: center;
@@ -47,10 +46,13 @@
     padding-block: 0.5rem;
     padding-inline: 0.5rem;
     margin-inline: auto;
+    background-color: transparent;
+    outline: none;
+    border: none;
     color: var(--dark);
     cursor: pointer;
   }
-  a:is(:hover, :focus) {
+  button:is(:hover, :focus) {
     outline: 1px solid var(--dark);
   }
   div {
