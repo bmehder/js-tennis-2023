@@ -8,6 +8,6 @@
 
 <style>
   h1 {
-    margin-top: calc(var(--spacing) * 3);
+    margin-block-start: calc(var(--spacing) * 3);
   }
 </style>

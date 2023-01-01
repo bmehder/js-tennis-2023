@@ -8,6 +8,7 @@
 </script>
 
 <h2>Game Set Match:<br />{displayName}</h2>
+
 <button on:click on:keypress>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -21,8 +22,9 @@
       clip-rule="evenodd"
     />
   </svg>
-  Create New Match
+  Start New Match
 </button>
+
 <div>
   <Confetti
     x={[-5, 5]}
