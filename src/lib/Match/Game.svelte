@@ -10,9 +10,3 @@
     <div class:bold={match.isInProgress}>{point}</div>
   {/each}
 </div>
-
-<style>
-  .bold {
-    font-weight: bold;
-  }
-</style>

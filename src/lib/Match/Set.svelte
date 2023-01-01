@@ -9,7 +9,7 @@
 <div>
   <div>Set {setNumber}</div>
   {#each set as playerScore, player}
-    <div class:isWinner={setWinner === players[player]}>
+    <div class:bold={setWinner === players[player]}>
       {playerScore}
       {#if tiebreak.some(pt => pt > 0) && setWinner !== players[player]}
         <sup>{tiebreak[player]}</sup>
@@ -17,9 +17,3 @@
     </div>
   {/each}
 </div>
-
-<style>
-  .isWinner {
-    font-weight: bold;
-  }
-</style>

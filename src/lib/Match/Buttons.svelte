@@ -15,10 +15,11 @@
   .button-group {
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    gap: calc(var(--spacing) * 3);
   }
   button {
-    padding: 1rem 2rem;
+    padding-block: var(--spacing);
+    padding-inline: calc(var(--spacing) * 2);
     background-color: var(--dark);
     color: white;
     font-size: inherit;
@@ -33,6 +34,6 @@
     scale: 0.98;
   }
   button:focus {
-    outline: 1px solid var(--dark);
+    outline: var(--dark-border);
   }
 </style>

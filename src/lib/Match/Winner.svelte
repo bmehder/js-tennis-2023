@@ -38,13 +38,15 @@
 
 <style>
   button {
+    --spacing: 0.5rem;
+
     max-width: fit-content;
     display: grid;
     place-items: center;
-    gap: 0.5rem;
-    margin-block: 0.5rem;
-    padding-block: 0.5rem;
-    padding-inline: 0.5rem;
+    gap: var(--spacing);
+    margin-block-start: var(--spacing);
+    padding-block: var(--spacing);
+    padding-inline: var(--spacing);
     margin-inline: auto;
     background-color: transparent;
     outline: none;
@@ -53,7 +55,7 @@
     cursor: pointer;
   }
   button:is(:hover, :focus) {
-    outline: 1px solid var(--dark);
+    outline: var(--dark-border);
   }
   div {
     position: fixed;
