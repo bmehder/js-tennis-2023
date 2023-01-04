@@ -107,15 +107,22 @@
       return
     }
 
+    enum Point {
+      ZERO = 0,
+      FIFTEEN = 15,
+      THIRTY = 30,
+      FORTY = 40,
+    }
+
     switch (match.score.game[ptWinner]) {
-      case 0:
-        match.score.game[ptWinner] = 15
+      case Point.ZERO:
+        match.score.game[ptWinner] = Point.FIFTEEN
         break
-      case 15:
-        match.score.game[ptWinner] = 30
+      case Point.FIFTEEN:
+        match.score.game[ptWinner] = Point.THIRTY
         break
-      case 30:
-        match.score.game[ptWinner] = 40
+      case Point.THIRTY:
+        match.score.game[ptWinner] = Point.FORTY
         break
       default:
         increaseWinnersSetScore(ptWinner)
