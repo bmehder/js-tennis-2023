@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { sum } from '$lib/helpers'
+  import { sum, isEven } from '$lib/helpers'
   import type { Match } from '$lib/Match/types'
 
   export let match: Match
 
-  // prettier-ignore
-  $: playerServing =
-    Object.values(match.score.sets)
-      .map(item => item.reduce(sum))
-      .reduce(sum) % 2 === 0 ? match.players[0] : match.players[1]
+  $: numberOfGames = Object.values(match.score.sets)
+    .map(item => item.reduce(sum))
+    .reduce(sum)
+
+  $: playerServing = isEven(numberOfGames) ? match.players[0] : match.players[1]
 </script>
 
 <div>

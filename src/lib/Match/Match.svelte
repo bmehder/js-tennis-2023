@@ -17,11 +17,12 @@
   }
 
   const updateSet = (ptWinner: 0 | 1) => {
-    const [player1Score, player2Score]: number[] = match.score.sets[match.currentSet]
+    const [player1Score, player2Score]: [number, number] =
+      match.score.sets[match.currentSet]
 
     const isTiebreak = () => [player1Score, player2Score].every(score => score === 6)
 
-    const increaseCurrentSet = () => {
+    const updateCurrentSet = () => {
       match.currentSet === 'set2' && (match.currentSet = 'set3')
       match.currentSet === 'set1' && (match.currentSet = 'set2')
     }
@@ -39,7 +40,7 @@
     isTiebreak() && (match.score.isTiebreak = true)
 
     if (isSetOver()) {
-      increaseCurrentSet()
+      updateCurrentSet()
       updateSetWinners()
     }
   }
@@ -86,7 +87,7 @@
 
     const playerWhoWonPoint = match.players.at(ptWinner)!
     const playerAtAdvantage =
-      match.players[match.score.game.findIndex(item => String(item) === 'Ad')]
+      match.players[match.score.game.findIndex(item => item === 'Ad')]
 
     const isPlayerAtAdvantageWonPoint = () => playerAtAdvantage === playerWhoWonPoint
     const isDuece = () => match.score.game.every(point => point === 40)
@@ -136,9 +137,17 @@
     updateMatch()
   }
 
-  const handleKeypress = (event: KeyboardEvent) => {
+  const handleButtonKeypress = (event: KeyboardEvent) => {
     event.key === ',' && handlePoint(0)
     event.key === '.' && handlePoint(1)
+  }
+
+  const handleStartNewMatch = (event: KeyboardEvent | MouseEvent) => {
+    if (event instanceof KeyboardEvent) {
+      event.key === 'Enter' && (match = createNewMatch())
+      return
+    }
+    match = createNewMatch()
   }
 </script>
 
@@ -148,23 +157,20 @@
   {#each Object.values(match.score.sets) as set, index}
     {@const tiebreak = Object.values(match.score.tiebreaks)}
     {@const setWinner = match.score.setWinners[index]}
-    <Set
-      {setWinner}
-      {set}
-      tiebreak={tiebreak[index]}
-      setNumber={index + 1}
-      players={match.players}
-    />
+    <Set {set} {setWinner} tiebreak={tiebreak[index]} setNumber={index + 1} />
   {/each}
 
-  <Game {match} />
+  <Game score={match.score} isInProgress={match.isInProgress} />
 </main>
 
 {#if match.isInProgress}
   {@const inTransition = { x: -1000, delay: 400 }}
   {@const outTransition = { x: -1000, duration: 300, easing: quartInOut }}
   <div in:fly={inTransition} out:fly={outTransition}>
-    <Buttons on:point={event => handlePoint(event.detail)} on:keypress={handleKeypress} />
+    <Buttons
+      on:point={event => handlePoint(event.detail)}
+      on:keypress={handleButtonKeypress}
+    />
   </div>
 {:else}
   {@const winner = match.score.setWinners.at(-1)}
@@ -172,11 +178,7 @@
   {@const outTransition = { y: 1000, duration: 300 }}
   <div in:fly={inTransition} out:fly={outTransition}>
     {#if winner}
-      <Winner
-        {winner}
-        on:click={() => (match = createNewMatch())}
-        on:keypress={evt => evt.key === 'Enter' && (match = createNewMatch())}
-      />
+      <Winner {winner} on:click={handleStartNewMatch} on:keypress={handleStartNewMatch} />
     {/if}
   </div>
 {/if}

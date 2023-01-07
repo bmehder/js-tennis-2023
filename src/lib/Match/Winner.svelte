@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Confetti } from 'svelte-confetti'
+
   export let winner: 'Player 1' | 'Player 2'
 
-  const displayName = document.querySelector(
-    `[data-player="${winner.at(-1)}"]`
-  )?.textContent
+  const displayName =
+    document.querySelector(`[data-player="${winner.at(-1)}"]`)?.textContent ??
+    'Name not found'
 </script>
 
 <h2>Game Set Match:<br />{displayName}</h2>
