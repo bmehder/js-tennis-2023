@@ -5,10 +5,10 @@
   import createNewMatch from '$lib/Match/createNewMatch'
 
   import Players from '$lib/Match/Players.svelte'
-  import Set from '$lib/Match/Set.svelte'
   import Game from '$lib/Match/Game.svelte'
   import Buttons from '$lib/Match/Buttons.svelte'
   import Winner from '$lib/Match/Winner.svelte'
+  import Sets from './Sets.svelte'
 
   let match = createNewMatch()
 
@@ -154,11 +154,7 @@
 <main>
   <Players {match} />
 
-  {#each Object.values(match.score.sets) as set, index}
-    {@const tiebreak = Object.values(match.score.tiebreaks)}
-    {@const setWinner = match.score.setWinners[index]}
-    <Set {set} {setWinner} tiebreak={tiebreak[index]} setNumber={index + 1} />
-  {/each}
+  <Sets score={match.score} />
 
   <Game score={match.score} isInProgress={match.isInProgress} />
 </main>

@@ -40,6 +40,9 @@
 </div>
 
 <style>
+  h2 {
+    user-select: none;
+  }
   button {
     --spacing: 0.5rem;
 

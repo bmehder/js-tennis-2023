@@ -9,12 +9,13 @@
   --spacing: 1rem;
 }
 
-/* * {
-  outline: 1px solid red;
-} */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  margin: 0;
   background-color: var(--primary);
   color: var(--dark);
   font-family: 'Open Sans', sans-serif;
@@ -25,7 +26,6 @@ h1,
 h2 {
   text-align: center;
   color: var(--dark);
-  margin-bottom: 0;
 }
 
 main {
